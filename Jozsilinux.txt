@@ -12,5 +12,32 @@ ip address add address=192.168.64.1 interface=iskola
 dhcp:
 /ip pool add name=suli ranges=192.168.64.10-192.168.64.254
 /ip dhcp-server add name=sulidhcp interface=iskola address-pool=suli
-/ip dhcp-server network add address=192.168.64.0./24 dns-server=8.8.8.8 gateway=192.168.64.1 netmask=24
+/ip dhcp-server network add address=192.168.64.0/24 dns-server=8.8.8.8 gateway=192.168.64.1 netmask=24
 /ip dhcp-client add interface=ether1
+
+
+
+/user add name=bozsi group=full password=12345678
+/user add name=vendeg group=read password=12345678
+
+jelszó módosítás= /user set password=87654321 numbers=1
+user disable= user set disable=yes numbers=0
+
+
+IP services (amiről nemtudjuk mi azt letiltjuk)
+
+
+NAT beállítása
+ip firewall nat add chain=srcnat src-address=192.168.64.0/24 action=masquarade 
+
+ip service set api disabled=yes
+ip service set api-ssl disabled=yes
+ip service set telnet disabled=yes
+ip service set ftp disabled=yes
+
+ip service set www address=192.168.64.0/24 port=8080
+ip service set winbox port=9182
+ip service set ssh port=2222
+
+
+
