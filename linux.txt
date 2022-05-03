@@ -1,0 +1,519 @@
+ps ax
+ss -lt
+ss -lu
+
+-------DNS szerver-------
+apt update
+apt install bind9
+
+
+systemctl status bind9
+systemctl stop bind9
+systemctl start bind9
+
+
+/
+|-etc/
+   |-bind/
+      |-db.0
+      |-db.127 	
+	  |-db.255
+	  |-db.empty
+	  |-db.local
+	  |-named.conf
+	  |-named.conf.default-zones
+	  |-named.conf.local
+
+cat /etc/bind/db.0
+
+zold.lan
+
+
+directory  "/var/cache/bind"
+
+/var/cache/bind/master
+/var/cache/bind/slave
+/var/cache/bind/master/zold.lan.zone
+
+
+--------/etc/bind/named.conf.local---------- 
+
+cat /etc/bind/named.conf.local 
+nano /etc/bind/named.conf.local
+
+
+zone "zold.lan" in {
+	type master;
+	file "master/zold.lan.zone";
+};
+------------
+
+named-checkconf /etc/bind/named.conf.local
+named-checkconf
+
+------------/var/chache/bind/master------------
+
+mkdir /var/chache/bind/master
+cd /var/chache/bind/master
+nano zold.lan.zone
+
+$TTL 3D (time to leave)
+zold.lan. SOA ns.zold.lan. hostmaster.zold.lan. (
+				2022020801 (01-szériaszám)
+				8H (frissítés)
+				2H (újrapróbálkozás)	
+				4W (lejárat)
+				1D
+				)
+zold.lan.	NS	ns.zold.lan.
+zold.lan.	A	172.16.16.160
+ns.zold.lan.	A	172.16.16.160
+
+named-checkzone zold.lan zold.lan.zone
+
+systemctl restart bind9
+-------------
+
+naplóállományok-
+/var/log/syslog
+tail /var/log/syslog
+
+
+dig -h
+dig @localhost zold.lan
+(windows cmd-nslookup zold.lan 172.16.16.160)
+
+
+rndc reload(ha a zónafájlt változtatjuk)
+dig @localhost zold.lan -t txt(ha txt van a zold.lan.zone -ban)
+
+-------DNS szerverek beállítása---------
+/etc/resolv.conf
+cat /etc/resolv.conf
+nano /etc/resolv.conf (nameserver 172.16.16.160)
+
+
+
+
+
+
+
+
+
+___Levelezőszerver___
+
+apt install pastfix  levélküldés
+
+ss -lt
+ss- ltn
+
+apt install mutt
+
+adduser kati
+adduser mari
+
+deluser mari (ha nem jo)
+
+
+--putty mashova
+
+mutt
+
+
+___kliens___ 
+(uj gep import)
+
+GUI telepítése
+
+minimálisat telepítünk
+
+apt update
+apt install lxde
+
+reboot
+profin:systemctl start lightdm
+
+apt install thunderbird
+
+Magyar nyelvi csomagok
+apt install thunderbird-l10n-hu
+
+
+apt install popa3d
+ps ax
+ss -lt
+
+telnet localhost 110
+user mari
+pass 12345
+list
+
+retr 
+quit
+
+/var/mail/mari
+
+
+___Adatbázis-szerver______
+
+apt istall mariadb-server
+mariadb
+
+grant all privileges
+on feherbt.*
+to feherbt@localhost
+identified by 'titok';
+
+quit
+
+mariadb -u  feherbt -p
+
+create database feherbt
+character set utf8
+collate utf8_hungarian_ci;
+
+
+adduser
+
+useradd -d /home/valami janos (milyen könyvtarba akarom letrehozni
+
+man ls
+man useradd
+man mariadb
+mariadb --help
+amriadb --help | less
+
+
+
+
+
+
+
+
+
+2022-03-22
+
+__Ansible__
+
+PC0	PC1	PC2	PC3
+PC4	PC5	PC6	PC7	
+
+Server0
+Server1
+Server3
+Server4
+
+
+PCR
+mutt, mc
+apache, php
+
+Célgépen
+Python, sudo, sshd
+
+
+
+apt update
+apt install ssh python3 python3-apt sudo
+
+adduser amd
+sudo
+
+visudo
+
+	root alatt beirtuk
+	amd ALL=NOPASSWD ALL
+
+
+su - amd
+sudo mkdir /valami
+
+
+(nano /etc/hosts
+  127.0.1.1 pc0.zold.lan pc0)-javitas
+
+
+
+
+rendszergazda gép(PCR):
+
+apt update
+apt install ansible ssh
+
+PC0
+ip a
+
+PCR
+ssh amd@172.16.16.xy
+
+Cél
+jelszó néljkül lehessen belépni
+a célgépekre.
+Kulcs alapú azonosítás
+
+pcr  készítünk nyilvános kulcspárt
+	titkos
+	nyilvános
+PCR:
+su - janos
+ssh-keygen
+
+ssh-copy-id amd@172.16.16.xy
+ssh amd@172.16.16.xy
+
+ssh-copy-id amd@172.16.16.xy
+ssh amd@172.16.16.xy
+
+mkdir gepek
+cd gepek
+
+nano ansible.cfg
+---ansible.cfg---
+[defaults]
+inventory = hosts
+---------mkdir 
+
+
+nano hosts
+---hosts---
+172.16.16.15
+172.16.16.44
+--------
+
+
+nano telep.yml
+---telep.yml---
+---
+- hosts: all
+  remote_user: amd
+  task:
+    - name: mc telepítése
+      apt:
+	name: mc
+	state: present
+	update_cache: yes
+      become: yes
+    -  name: mutt telepítése
+       apt:
+	 name: mutt
+	 state: present
+	 update_cache: yes
+      become: yes
+    - name: mari felhasználó
+      user:
+	name: amri
+	comment: Zsenge Maria
+	shell: /bin/bash
+	password: "{{'12345' | password_hash('sha512', 'abda')}}"
+      become: yes	
+------
+
+ansible-playbook telep.yml
+(ha nem jo)ansible-playbook -i "172.16.16.44," telep.yml
+
+
+forrás: https://szit.hu/doku.php?id=oktatas:linux:konfiguraciokezeles:ansible:playbook:kezdes
+
+
+
+
+
+1 hét mulva utolsó dolgozat beadandó
+
+mariadb server
+  telepíteni
+  felvenni felhasználót
+  létrehozni adatbázis
+  a felhasználónak jogot adni, hogy elérje az adatbázist
+  megmutatni a folyamatok között
+
+gépnév beállítás
+ip cím beállítás
+  /etc/network/interfaces
+
+Készítsen képernyő képet a következő parancsokról
+ apt list mariadb-server
+ cat /etc/network/interfaces
+ cat /etc/hostname
+
+
+
+
+
+
+
+
+
+
+2022-03-29
+Dolgozat beadandó:16:40
+
+Imortáljon Linuxont
+Telepítsen MadriaDB-szervert
+Vegye fel egy csokor nevű felhasználót.
+Hozzon létre egy csokor nevű adatbázist.
+Adjon jogot a csokor felhasználónak
+a csokor adatbázisra, ha nincs még beállítva.
+
+Gépnév: cica
+Szerver Ip:10.1.1.2/24
+
+
+
+apt update
+apt install ssh 
+
+Windows cmd:ssh janos@172.16.16.xy
+su -l
+
+
+
+apt install mariadb-server
+
+create user csokor@localhost 
+identified by 'titok';
+
+
+create database csokor
+character set utf8
+collate utf8_hungarian_ci;
+
+grant all privileges
+on csokor.*
+to csokor@localhost;
+
+----------
+Irja a használt SQl parancsokat a csokor.sql
+fájlba. Készítsen képernyőképet a köv:
+cat csokor.sql
+uj mappa ID neven asztalon benne it bash here
+$ notepad csokor.sql
+ls
+cat csokor.sql
+------
+
+nano /etc/hostname
+cica
+
+hostname cica
+logout
+su -l
+
+
+Szerver Ip:10.1.1.2/24
+nano /etc/network/interfaces
+iface enp0s3 inet static
+        address 10.1.1.2
+        netmask 255.255.255.0
+
+
+Képernyőkép:cat /etc/network/interfaces
+
+
+
+
+
+
+
+
+________Tárhely szolgáltatás_________
+
+cica szerver
+készítsen tárhely szolgáltatást.	
+
+	Webszerver
+	PHP
+	adatbázis szerver
+	levelező szerver
+	FTP szerver
+	DNS szerver
+
+domain		900 ft/év
+VPS szerver	12000 ft/év
+
+
+apt install apache2 -y
+apt install php
+apt install mariadb-server -y
+apt install postfix dovecot-imapd -y
+apt install proftpd-core
+apt install bind9 -y
+
+systemctl status proftpd.service
+systemctl start proftpd.service
+journalctl -xe
+
+
+nano /etc/postfix/main.cf
+cd /var/www/html/
+
+mv index.html index.html.eredeti
+nano index.html
+
+
+https://getbootstrap.com/docs/5.1/getting-started/download/
+
+Adószám kérése
+
+Egyéni vállalkozói jogviszony kérése
+
+
+
+
+==========================================
+
+2022-04-26
+
+pont
+
+iptables
+nft
+
+filtertáblával fogunk szűrni
+
+
+nft tábla
+nft add table inet filter
+
+https://szit.hu/doku.php?id=oktatas:linux:tuzfal:netfilter:nftables
+
+
+nft list ruleset
+nft flush ruleset
+
+apt install iptables
+
+nft add rule inet filter input tcp dport 80 counter accept
+nft add rule inet filter input counter drop
+
+
+
+nmap arra való hogy letapogassuk másik gépet milyen portok vannak nyitva
+
+====uj iskolazo
+apt upgrade
+apt install nmap
+nmap 172.16.16.101
+
+
+
+=====pont
+nft delete rule inet filter input handle 0
+apt install apache2
+
+nft add inet filter input tcp dport 22 counter accept
+nft add inet filter input counter drop
+
+nft list ruleset
+
+nft insert rule inet filter input tcp drop 80 counter accept
+
+systemctl enable nftables
+reboot
+
+tail -f /var/log/syslog
+
+
+
+
+

@@ -1,0 +1,16 @@
+=====================================
+Parancssor config minden.
+
+
+mikrotikba:
+/interface bridge add name=iskola
+ip address add address=192.168.64.1 interface=iskola
+
+/interface bridge port add bridge=iskola interface=ether3
+/interface bridge port add bridge=iskola interface=ether4
+
+dhcp:
+/ip pool add name=suli ranges=192.168.64.10-192.168.64.254
+/ip dhcp-server add name=sulidhcp interface=iskola address-pool=suli
+/ip dhcp-server network add address=192.168.64.0./24 dns-server=8.8.8.8 gateway=192.168.64.1 netmask=24
+/ip dhcp-client add interface=ether1
