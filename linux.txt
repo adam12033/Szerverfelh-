@@ -100,6 +100,332 @@ nano /etc/resolv.conf (nameserver 172.16.16.160)
 
 
 
+
+Dolgozat 2022-02-22
+
+1.Telepítsen webszervert
+2.Írja át az alapértelmezett weblapot. Legyen benne saját neve.
+3.A használt parancsokat gyűjtse a parancsok.txt fájlba
+4Telepítsen DNS szervert. Vegye a vezetéknevét ékezetek nélkül, tegye a végére a lan utótagot, majd állítsa be domainnévként. Pl. nagy.lan
+A konfigurációs fájlokat töltse le, adja be.
+
+
+Iskolazo_dol_DA
+
+apt update
+apt install apache2
+
+ps ax
+ps axf
+ss-lt
+systemctl status apache2(Megnézem hogy megvan e az apache2)
+
+cd /var/www/html
+ls
+mv index.html index.html.eredeti
+nano index.html
+
+---index.html---
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>DA</title>
+</head>
+<body>
+  <h1>Délczeg Ádám</h1>
+
+</body>
+</html>
+------
+ctrl+o (mentés)
+ctrl+x (kilepes)
+
+ip a(ip cím-ezt irom a böngészőbe)
+
+-------------putty---------
+apt install openssh-server
+ps ax 
+ss -lt
+
+ip a 
+
+			(enp0s3
+			inet 172.16.16.103)-ezt nem írtuk be
+
+login as: janos
+password:12345
+su -
+jelszo:12345
+apt install bind9
+ps ax
+ss -lt
+---------------
+
+--------/etc/bind/named.conf.local---------- 
+nano /etc/bind/named.conf.local
+named-checkconf /etc/bind/named.conf.local
+
+zone "barna.lan" in {
+	type master;
+	file "master/barna.lan.zone";
+};
+
+
+
+mkdir /var/chache/bind/master
+cd /var/chache/bind/master
+nano barna.lan.zone
+---barna.lan.zone---
+$TTL 3D 
+barna.lan. SOA ns.barna.lan. hostmaster.barna.lan. (
+				2022021501 (01-szériaszám)
+				8H (frissítés)
+				2H (újrapróbálkozás)	
+				4W (lejárat)
+				1D
+				
+barna.lan.	NS	ns.barna.lan.
+barna.lan.	A	172.16.16.103
+ns.banra.lan.	A	172.16.16.103
+barna.lan. 	TXT	"Délczeg Ádám"
+www		CNAME 	barna.lan.
+
+named-checkzone barna.lan /var/cache/bind/master/barna.lan.zone
+
+systemctl restart bind9
+
+dig @localhost barna.lan
+
+rndc reload
+
+--------------------------------doga
+PHP(personal home page)
+ps axf
+
+apt install psmisc
+pstree
+pstree -c
+
+
+apt install php(php telepítése)
+
+
+___FTP szerver___
+apt install vsftpd
+systemctl stop vsftpd
+apt remove --purge vsftpd
+
+apt install proftpd
+
+
+user: janos
+pass: 12345
+
+
+apt install tcpick
+tcpick
+
+Ferlhasználo adás:
+adduser kati
+pass 12345
+getent passwd kati
+getent shadow kati
+
+
+
+_____apache-SSL_____
+a2enmod ssl
+systemctl restart apache2
+
+
+
+
+
+
+
+
+
+
+
+-----------------------------------------------
+Partícionálás
+___HDD___
+
+40 GB HDD
+32 GB HDD
+
+lsblk
+
+sda
+sdb
+sdc
+sr0  CD/DVD ROM
+
+fdisk /dev/sdb
+
+sdc
+32 GB
+  10 GB  sdc1
+  20 GB  sdc2
+
+fdisk /dev/sdc
+
++10G
+
+Formázás
+(sávozás)
+fájlrendszer létrehozása
+make filesystem
+mkfs.ext4 /dev/sdb1
+mkfs.ext4 /dev/sdc1
+
+lsblk -f
+
+mkdir mnt/a
+mkdir mnt/b
+mkdir mnt/data
+
+
+/etc
+
+Fájlrendszer csatolások
+
+/ect/fstab
+
+cp fstab fstab.eredeti (mentés)
+
+blkid /dev/sdc2 | cut -f 2 -d " " >> /etc/fstab
+
+mount -a
+
+poweroff
+
+reboot
+
+hostname zold.lan
+nano /etc/hostname
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--------------------------------
+hostname alma
+logout
+
+nano /etc/hostname
+alma
+
+apt install isc-dhcp-server
+systemctl start isc-dhcp-server
+systemctl stop isc-dhcp-server
+systemctl restart isc-dhcp-server
+
+Belső hálózat
+/etc/dhcp/dhcpd.conf
+
+-Belépés utáni üzenet
+cd /etc
+cp motd motd.eredeti
+nano /etc/motd(üzenet)
+
+-Belépés előtti üzenet
+nano /etc/issue
+
+-Távolról látható üzenet
+nano /etc/issue.net
+
+-SSH
+nano ssh/sshd_config
+valahol alul banner
+systemctl restart ssh
+
+
+Belső hálózat
+feher
+
+		  192.168..10.0/24
+		  			.1			172.16.16.x	
+					enp0s8	     enp0s3     iskolai 	172.16.16.254
+kliens (alma) ------------------------- server (szilva)------------------------suli szerver 
+
+					dinamikus 101-200
+
+
+
+
+(szilva-szerver)
+apt update
+apt install isc-dhcp-server
+
+nano /ect/network/interfaces
+allow-hotplug enp0s8
+iface enp0s8 inet static
+    address 192.168.10.1/24
+
+
+ifdown enp0s8
+ifup enp0s8
+
+nano /ect/default/isc-dhcp-server
+INTERFACESv4="enp0s8"
+
+nano /ect/dhcp/dhcpd.conf
+
+-----dhcp.conf------
+option domain-name "zold.lan";
+option domain-name-servers 192.168.10.1, 8.8.8.8;
+
+default-lease-time 600;
+max-lease-time 7200; 
+ 
+subnet 192.168.10.0 netmask 255.255.255.0 {
+      range 192.168.10.101 192.168.10.200;
+      option routers 192.168.10.1;
+}
+------
+
+dhcpd -t
+systemctl start isc-dhcp-server
+dhcp-lease-list
+dhcp-lease-list --all
+
+
+
+
+_____Internet szolgáltatás_______
+
+NAT
+
+systemclt net.ipv4.ip_forward
+systemclt -w net.ipv4.ip_forward=1
+
+apt install iptables
+iptables -t nat -A POSTROUTING -o enp0s3 -j MASQUERADE(enp0s3=kifelenéző interface)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ___Levelezőszerver___
 
 apt install pastfix  levélküldés
