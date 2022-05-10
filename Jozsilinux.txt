@@ -96,5 +96,7 @@ bemegyünk a firewallba itt tcp udp szabályt állítunk
 ha 53 mas portra jön a kérés és tcp vagy udp a protokoll és nem ebből a hálózatból akkor eldobja  a csomagot 
 add action=drop chain=input dst-port=53 protocoll=tcp src-address=!192.168.66.0/24
 add action=drop chain=input dst-port=53 protocoll=udp src-address=!192.168.66.0/24
-
+add action=fasttrack-connection chain=forward connection-state=established,related dst-address=192.168.66.0/24
+add chain=forward connection-state=established,related action=accept
+add chain=input connection-state=invalid action=drop
 
