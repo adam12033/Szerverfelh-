@@ -91,9 +91,10 @@ systemctl start isc-dhcp-server - a dhcp szerver elindítása
 grafikus linuxon mikrotikba belépünk és kliens kell a nethez
 
 
-
-
-
-
+53-as portot kell védeni 
+bemegyünk a firewallba itt tcp udp szabályt állítunk
+ha 53 mas protokollra jön a kérés és tcp vagy udp a protokoll és nem ebből a hálózatból akkor eldobja  a csomagot 
+add action=drop chain=input dst-port=53 protocoll=tcp src-address=!192.168.66.0/24
+add action=drop chain=input dst-port=53 protocoll=udp src-address=!192.168.66.0/24
 
 
