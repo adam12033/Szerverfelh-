@@ -41,3 +41,48 @@ ip service set ssh port=2222
 
 
 
+
+
+
+
+
+
+atp install ISC-dhcp-server
+Virtuális gép dhcp-vel kapjon ip-t
+
+mikLinux halokartya nat legyen
+nano /etc/network/interface
+staticot dhcpre ujraindit halokartya
+
+cd /etc/dhcp
+ls
+mv dhcpd.conf dhcpd.conf.bak
+
+nano dhcpd.conf
+option domain-name "suli.lan";
+option domain-name-servers 192.168.66.2;
+
+default-lease-time 300;
+max-lease-time 7200;
+
+subnet 192.168.66.0 netmask 255.255.255.0 {
+        range 192.168.66.11 192.168.66.100;
+        option routers 192.168.66.1
+}
+
+cd /etc/default
+nano /isc-dhcp-server
+
+
+
+
+
+
+
+
+
+
+
+
+
+
