@@ -88,8 +88,7 @@ dhcpd -t - a configok ellenőrzésére
 systemctl start isc-dhcp-server - a dhcp szerver elindítása
 
 
-
-
+grafikus linuxon mikrotikba belépünk és kliens kell a nethez
 
 
 
