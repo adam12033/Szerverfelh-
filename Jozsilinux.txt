@@ -52,10 +52,16 @@ Virtuális gép dhcp-vel kapjon ip-t
 atp install ISC-dhcp-server
 
 mikLinux halokartya nat legyen
-nano /etc/network/interface
+nano /etc/network/interfaces
 staticot dhcpre 
 ifdown enp0s3 - ujraindit halokartya
 ifup enp0s3
+nano /etc/network/interfaces
+iface enp0s3 inet static
+        address 192.168.66.2/24
+        gateway 192.168.66.1
+        dns-servers 172.168.249,8.8.8.8,8.8.4.4
+
 
 
 cd /etc/dhcp
