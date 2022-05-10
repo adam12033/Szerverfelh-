@@ -47,12 +47,16 @@ ip service set ssh port=2222
 
 
 
-atp install ISC-dhcp-server
+=====================================
 Virtuális gép dhcp-vel kapjon ip-t
+atp install ISC-dhcp-server
 
 mikLinux halokartya nat legyen
 nano /etc/network/interface
-staticot dhcpre ujraindit halokartya
+staticot dhcpre 
+ifdown enp0s3 - ujraindit halokartya
+ifup enp0s3
+
 
 cd /etc/dhcp
 ls
@@ -71,9 +75,11 @@ subnet 192.168.66.0 netmask 255.255.255.0 {
 }
 
 cd /etc/default
-nano /isc-dhcp-server
+nano /isc-dhcp-server  
+INTERFACESv4="enp0s3"
 
-
+dhcpd -t - a configok ellenőrzésére
+systemctl start isc-dhcp-server - a dhcp szerver elindítása
 
 
 
