@@ -1,0 +1,22 @@
+mount -t vboxsf Documents /mnt (Megosztott mappa)
+which adduser
+chmod +x - execute
+adduser user2
+cat /etc/passwd (alaprendszer felhasználóival kapcsolatos adatok)
+passwd user2 (Felhasználó jelszó módosítás amennyiben rootban vagyunk bejelentkezve, nem root tehát nem superuser csak a saját jelszavát módosíthatja)
+
+Ékezetlenítés,kisbetűssé alakítás:
+
+nev="Tóth Ottó";echo ${nev,,}
+nev="Tóth Ottó";echo ${nev^^}
+nev="Tóth Ottó";echo "$nev"|tr '[:upper:]' '[:lower:]'
+
+echo "Arvíztürötükörfúrógép"|awk '{print tolower($0)}'
+echo "Arvíztürötükörfúrógép"|awk '{print toupper($0)}'
+A fenti parancsok kisbetűssé és nagybetűssé alakítást csak a standard ASCII 7 bit-es,tehát latin vagy angol ABC betűire teszik alkalmazhatóvá
+
+echo "Arvíztürötükörfúrógép"|iconv -f UTF-8 -t ASCII//TRANSLIT
+
+hatására: A'rvi'ztu"ro"tu:ko:rfu'ro'ge'p (repülő ékezetekkel oldja meg az ékezetes betűk eltüntetését)
+
+echo "Arvíztürötükörfúrógép"|unaccent utf-8

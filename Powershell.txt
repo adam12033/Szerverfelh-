@@ -1,0 +1,33 @@
+Pelda1.sh
+echo "Szép Jó napot kívánok"
+nev="Délczeg Ádám"
+echo $nev
+jelszo="Tengeri herkentyű"
+echo -e "$jelszo\n$jelszo\n|passwd" user2
+
+
+Pelda2.sh
+echo -n "Név: "
+read nev
+echo "Amit beirtál: $nev"
+
+
+Készítsünk olyan powershell scriptet, ami képes egy ilyen file-t létrehozni úgy, hogy annak tartalmát működése közben kell begépelni.
+A program kérje be a vezeték- és utónevet, amelyek esetén bármelyik megadása elhagyható, amennyiben egyiket sem adjuk meg, akkor viszont szeretnénk, ha befejeződne ez az ismétlődő folyamat (CIKLUS)
+
+Pelda3-sh
+echo "veznev;utonev">alapadatok.txt
+while [ 1 -eq 1 ]
+do
+  read -p "Vezetéknév: " vnev
+  read -p "Utónév: " unev
+  if [[ "$vnev" = "" && "$unev" = "" ]]; then
+	break
+  fi
+  echo "$vnev;$unev">>alapadatok.txt
+done
+
+
+#&& -és logikai művelete
+#powershell script esetén az if ciklust fi szóval zárjuk le
+
