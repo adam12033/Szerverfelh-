@@ -31,3 +31,89 @@ done
 #&& -és logikai művelete
 #powershell script esetén az if ciklust fi szóval zárjuk le
 
+
+
+
+
+
+
+
+
+-----------------------------------
+
+2022-12-08
+
+Pelda4.sh
+
+#1/bin/bash
+tomb=(hapci tudor vidor kuka)
+echo ${tomb[3]}
+
+(Kiírja a tömb harmadik elemét)
+
+
+tomb=(hapci tudor vidor kuka)
+echo ${#tomb[@]}
+
+${#tomb} megmutatja az elemek darabszámát
+${!tomb[@]} pedig láthatóvá teszi az elemek 0-van kezdődő, a darabszámuk-1-ig terjedő lehetséges index értékeit.
+
+
+Saját tömb létrehozása kapcsán használható a seq 1 5 parancs, amely 1 től 5-ig felsorolja a számokat, de így biztosíthatja azok alapján pl. a tömb elemek darabszámának meghatározását.
+
+for db in $(seq 1 5)
+do
+	echo $RANDOM
+done
+
+$RANDOM előállít 2 byte-os véletlen pozitív egészeket (0-)
+Hogy lottó szám legyen $(($RANDOM%90+1))
+
+
+for db in $(seq 1 5)
+do
+	echo $((RANDOM%90+1))
+done
+
+Lottoszamok=()
+for db in $(seq 1 5)
+do
+	lottoszamok+=($((($RANDOM%90+1)))
+done
+echo ${lottoszamok[0]}
+
+
+
+Próbáljunk meg elkészíteni azt a programot, amely elsőként felépíti a vnevek és unevek kezdetben üres tömböket, hogy azokban az alapadatok.txt korábban tárolt file megfelelő értékei legyenek megtalálhatók és így lehetőség nyílik egy véletlen vezeték- és utónev kivélasztásával meghatározni egy konkrét személy nevét.
+
+
+touch Pelda5.sh
+chmod +x Pelda5.sh
+
+#!/bin/bash
+vnevek=()
+unevek=()
+db=1
+while read sor
+do
+	if [ $db -gt 1 ]
+	then
+		vnev=`echo $sor|awk -F";" '{print $1}'`
+		unev=`echo $sor|awk -F";" '{print $2}'`
+		if [ "$vnev" != "" ]
+		then
+			vnevek+=($vnev)
+		fi
+		if [ "$unev" != "" ]
+		then
+			unevek+=($unev)
+		fi
+	fi
+	db=`expr $db + 1`
+done<alapadatok.txt
+echo "Vezetéknevek száma: ${#vnevek[@]} ${vnevek[*]}"
+echo "Utónevek száma: ${#unevek[*]} ${unevek[*]}"
+vnev=`for s in ${vnevek[0]}; do echo $s; done|shuf -n 1`
+unev=`for s in ${unevek[*]}; do echo $s; done|shuf -n 1`
+echo "$vnev $unev"
+
