@@ -1,0 +1,23 @@
+Linux Commands Fedora
+
+Alt + f2;  gnome-terminal
+
+
+ ls - l -a -t;  -l(long listing), -a(show hidden  dot files), -t(list by time)
+
+
+type bash; - To determine the location of a particular command.
+
+
+$ ls /usr/bin | sort -f | less; - This command lists the contents of the /usr/bin directory.
+
+
+vi $(find /home | grep xyzzy);  - If you know the name but not the location of the file.
+
+
+-------------------------
+
+
+
+dnf history; Manually istalled packages
+rpm -qa;  List all installed packages
